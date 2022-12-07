@@ -1,0 +1,25 @@
+server:
+  port: 18080
+dubbo:
+  application:
+    name: tanhua-app
+  registry:
+    address: zookeeper://192.168.136.160:2181
+    check: false
+    timeout: 500000
+  scan:
+    base-packages: com.itlyc.app
+
+spring:
+  redis:
+    host: 192.168.136.160
+    port: 6379
+    database: 0
+
+tanhua:
+  oss: # oss对象存储
+    endpoint: oss-cn-beijing.aliyuncs.com
+    accessKey: LTAI5tNvkKMZjtr4hPzsDkAo
+    secret: AkaBhcICcaGzfwXjlRGbH41RIdF3nY
+    bucketName: seekerovo
+    url: https://seekerovo.oss-cn-beijing.aliyuncs.com
