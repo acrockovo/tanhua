@@ -107,6 +107,7 @@ public class UserController {
         }
 
         User user = UserHolder.get();
+
         return userManager.findUserInfoById(user.getId());
     }
 }
