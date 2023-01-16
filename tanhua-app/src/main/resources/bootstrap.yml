@@ -1,16 +1,24 @@
 spring:
-  redis:
-    host: 121.36.40.249
-    port: 6379
-    database: 0
   cloud:
     nacos:
       discovery:
         server-addr: ${nacos.server.addr}
         namespace: 1927dd15-b67f-4982-b4a4-7d44b9646969
-
-server:
-  port: 18080
+      config:
+        server-addr: 121.36.40.249:8848 # 配置中心地址
+        file-extension: yaml
+        namespace: 1927dd15-b67f-4982-b4a4-7d44b9646969
+        group: TANHUA_GROUP
+        ext-config:
+          - refresh: true
+            data-id: tanhua-redis.yaml # redis 配置
+            group: TANHUA_GROUP
+          - refresh: true
+            data-id: tanhua-oss.yaml # oss 配置
+            group: TANHUA_GROUP
+          - refresh: true
+            data-id: tanhua-app-server-port.yaml # 启动端口配置
+            group: TANHUA_GROUP
 
 dubbo:
   application:
@@ -21,14 +29,7 @@ dubbo:
   registry:
     address: nacos://121.36.40.249:8848
     parameters[namespace]: 1927dd15-b67f-4982-b4a4-7d44b9646969 # 注册到指定的namespace命名空间中
-
   scan:
     base-packages: com.itlyc.app
 
-tanhua:
-  oss: # oss对象存储
-    endpoint: oss-cn-beijing.aliyuncs.com
-    accessKey: LTAI5tNvkKMZjtr4hPzsDkAo
-    secret: AkaBhcICcaGzfwXjlRGbH41RIdF3nY
-    bucketName: seekerovo
-    url: https://seekerovo.oss-cn-beijing.aliyuncs.com
+
