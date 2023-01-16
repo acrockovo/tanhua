@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: tanhua-db-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 121.36.40.249:8848
+        namespace: 1927dd15-b67f-4982-b4a4-7d44b9646969
+      config:
+        server-addr: 121.36.40.249:8848 # 配置中心地址
+        file-extension: yaml
+        namespace: 1927dd15-b67f-4982-b4a4-7d44b9646969
+        group: TANHUA_GROUP
+        ext-config:
+          - refresh: true
+            data-id: tanhua-mapper.yaml
+            group: TANHUA_GROUP
+
+dubbo:
+  application:
+    name: tanhua-db-service
+  protocol:
+    name: dubbo
+    port: 20881
+  registry:
+    address: nacos://121.36.40.249:8848
+    parameters[namespace]: 1927dd15-b67f-4982-b4a4-7d44b9646969 # 注册到指定的namespace命名空间中
+
+  scan:
+    base-packages: com.itlyc.service
