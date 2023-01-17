@@ -5,7 +5,7 @@ import com.itlyc.domain.db.User;
 /**
  * 用户模块service
  * @author lyc
- * @date 2022-11018
+ * @date 2022-11-18
  */
 public interface UserService {
     // 保存用户

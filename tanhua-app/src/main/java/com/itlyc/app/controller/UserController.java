@@ -80,24 +80,23 @@ public class UserController {
 
     /**
      * 上传用户头像
-     * @param headImg 用户头像
+     * @param headPhoto 用户头像
      * @param token 令牌
      * @return
      */
-    @PostMapping("/user/loginReginfo/head")
-    public ResponseEntity saveUserInfoHead(MultipartFile headImg,@RequestHeader("Authorization") String token) throws Exception{
-        return userManager.saveUserInfoHead(headImg,token);
+    @PostMapping({"/user/loginReginfo/head","/users/header"})
+    public ResponseEntity saveUserInfoHead(MultipartFile headPhoto,@RequestHeader("Authorization") String token) throws Exception{
+        return userManager.saveUserInfoHead(headPhoto,token);
     }
 
     /**
      * 根据id查询用户信息
      * @param userID 用户id
      * @param huanxinID 环信id
-     * @param token 用户令牌
      * @return
      */
     @GetMapping("/users")
-    public ResponseEntity findUserInfoById(Long userID,Long huanxinID,@RequestHeader("token")String token){
+    public ResponseEntity findUserInfoById(Long userID,Long huanxinID){
         if(userID != null){
             return userManager.findUserInfoById(userID);
         }
@@ -109,5 +108,16 @@ public class UserController {
         User user = UserHolder.get();
 
         return userManager.findUserInfoById(user.getId());
+    }
+
+    /**
+     * 更新用户信息
+     * @param userInfo 用户信息对象
+     * @return
+     */
+    @PutMapping("/users")
+    public ResponseEntity updateUserInfo(@RequestBody UserInfo userInfo) {
+
+        return userManager.updateUserInfo(userInfo);
     }
 }

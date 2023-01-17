@@ -42,49 +42,51 @@
     </insert>
 
     <update id="update">
-        update tb_user_info set
-        <if test="nickname != null and nickname != ''">
-            nickname = #{nickname},
-        </if>
-        <if test="avatar != null and avatar != ''">
-            avatar = #{avatar},
-        </if>
-        <if test="tags != null and tags != ''">
-            tags = #{tags},
-        </if>
-        <if test="gender != null and gender != ''">
-            gender = #{gender},
-        </if>
-        <if test="age != null and age != ''">
-            age = #{age},
-        </if>
-        <if test="education != null and education != ''">
-            education = #{education},
-        </if>
-        <if test="city != null and city != ''">
-            city = #{city},
-        </if>
-        <if test="birthday != null and birthday != ''">
-            birthday = #{birthday},
-        </if>
-        <if test="coverPic != null and coverPic != ''">
-            cover_pic = #{coverPic},
-        </if>
-        <if test="profession != null and profession != ''">
-            profession = #{profession},
-        </if>
-        <if test="income != null and income != ''">
-            income = #{income},
-        </if>
-        <if test="marriage != null and marriage != ''">
-            marriage = #{marriage},
-        </if>
-        <if test="created != null and created != ''">
-            created = #{created},
-        </if>
-        <if test="updated != null and updated != ''">
-            updated = #{updated},
-        </if>
+        update tb_user_info
+        <set>
+            <if test="nickname != null and nickname != ''">
+                nickname = #{nickname},
+            </if>
+            <if test="avatar != null and avatar != ''">
+                avatar = #{avatar},
+            </if>
+            <if test="tags != null and tags != ''">
+                tags = #{tags},
+            </if>
+            <if test="gender != null and gender != ''">
+                gender = #{gender},
+            </if>
+            <if test="age != null and age != ''">
+                age = #{age},
+            </if>
+            <if test="education != null and education != ''">
+                education = #{education},
+            </if>
+            <if test="city != null and city != ''">
+                city = #{city},
+            </if>
+            <if test="birthday != null and birthday != ''">
+                birthday = #{birthday},
+            </if>
+            <if test="coverPic != null and coverPic != ''">
+                cover_pic = #{coverPic},
+            </if>
+            <if test="profession != null and profession != ''">
+                profession = #{profession},
+            </if>
+            <if test="income != null and income != ''">
+                income = #{income},
+            </if>
+            <if test="marriage != null and marriage != ''">
+                marriage = #{marriage},
+            </if>
+            <if test="created != null and created != ''">
+                created = #{created},
+            </if>
+            <if test="updated != null and updated != ''">
+                updated = #{updated},
+            </if>
+        </set>
         where id = #{id}
     </update>
     <select id="findById" resultType="com.itlyc.domain.db.UserInfo">

@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Duration;
@@ -58,6 +59,7 @@ public class UserManager {
      * @param user 用户对象
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public ResponseEntity saveUser(User user) {
 
         return ResponseEntity.ok(userService.save(user));
@@ -83,6 +85,7 @@ public class UserManager {
      * @param verificationCode 验证码
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public ResponseEntity regAndLogin(String phone, String verificationCode) {
 
         String redisCode = redisTemplate.opsForValue().get(ConstantUtil.SMS_CODE + phone);
@@ -173,6 +176,7 @@ public class UserManager {
      * @param token 令牌
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public ResponseEntity saveUserInfoHead(MultipartFile headImg, String token) throws Exception{
 
         if(StringUtils.isBlank(token)){
@@ -202,16 +206,6 @@ public class UserManager {
     }
 
     /**
-     * 解析token 查找用户
-     * @param token 用户token
-     * @return
-     */
-    public User findUserByToken(String token) {
-
-        return JSON.parseObject(token, User.class);
-    }
-
-    /**
      * 根据id查询用户信息
      * @param id 用户id
      * @return
@@ -225,6 +219,18 @@ public class UserManager {
         vo.setAge(userInfo.getAge().toString());
 
         return ResponseEntity.ok(vo);
+    }
+
+    /**
+     * 更新用户信息
+     * @param userInfo 用户信息对象
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseEntity updateUserInfo(UserInfo userInfo) {
+
+        userInfoService.update(userInfo);
+        return ResponseEntity.ok(null);
     }
 }
 
