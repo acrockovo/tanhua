@@ -1,7 +1,6 @@
 package com.itlyc.app.manager;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.itlyc.autoconfig.oss.OssTemplate;
 import com.itlyc.domain.db.User;
 import com.itlyc.domain.db.UserInfo;

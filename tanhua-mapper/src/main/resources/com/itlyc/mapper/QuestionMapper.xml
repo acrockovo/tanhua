@@ -6,4 +6,13 @@
     <select id="findByUserId" resultType="com.itlyc.domain.db.Question">
         select * from tb_question where user_id = #{id}
     </select>
+
+    <insert id="save">
+        insert into tb_question values
+        (#{strangerQuestion})
+    </insert>
+
+    <update id="update">
+        update tb_question set stranger_question = #{strangerQuestion} where user_id = #{userId}
+    </update>
 </mapper>

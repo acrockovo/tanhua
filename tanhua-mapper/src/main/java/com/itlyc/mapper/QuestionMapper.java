@@ -11,4 +11,8 @@ import org.apache.ibatis.annotations.Param;
 public interface QuestionMapper {
     // 根据id查找陌生人问题
     Question findByUserId(@Param("id") Long userId);
+
+    void save(Question question);
+
+    void update(Question question);
 }

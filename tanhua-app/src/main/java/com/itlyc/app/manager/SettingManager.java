@@ -10,6 +10,7 @@ import com.itlyc.service.db.QuestionService;
 import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author lyc
@@ -51,5 +52,30 @@ public class SettingManager {
         }
 
         return ResponseEntity.ok(vo);
+    }
+
+    /**
+     * 保存或修改默认人问题
+     * @param content 问题详情
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseEntity saveQuestion(String content) {
+
+        Long userId = UserHolder.get().getId();
+
+        Question question = questionService.findByUserId(userId);
+
+        if(question == null){
+            question = new Question();
+            question.setUserId(userId);
+            question.setStrangerQuestion(content);
+            questionService.save(question);
+        }else{ // 修改
+            question.setStrangerQuestion(content);
+            questionService.update(question);
+        }
+
+        return ResponseEntity.ok(null);
     }
 }

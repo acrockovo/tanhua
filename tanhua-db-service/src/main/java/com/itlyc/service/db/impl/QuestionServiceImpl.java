@@ -22,4 +22,14 @@ public class QuestionServiceImpl implements QuestionService {
     public Question findByUserId(Long userId) {
         return questionMapper.findByUserId(userId);
     }
+
+    @Override
+    public void save(Question question) {
+        questionMapper.save(question);
+    }
+
+    @Override
+    public void update(Question question) {
+        questionMapper.update(question);
+    }
 }
