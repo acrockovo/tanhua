@@ -4,6 +4,7 @@ import com.itlyc.domain.db.Question;
 import com.itlyc.mapper.QuestionMapper;
 import com.itlyc.service.db.QuestionService;
 import org.apache.dubbo.config.annotation.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
 
@@ -15,7 +16,7 @@ import javax.annotation.Resource;
 @Service
 public class QuestionServiceImpl implements QuestionService {
 
-    @Resource
+    @Autowired
     private QuestionMapper questionMapper;
 
     @Override

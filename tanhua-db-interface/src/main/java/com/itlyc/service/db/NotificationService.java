@@ -11,4 +11,8 @@ public interface NotificationService {
 
     // 根据id查找当前用户的配置
     Notification findByUserId(Long userId);
+
+    void update(Notification notificationParam);
+
+    void save(Notification notificationParam);
 }

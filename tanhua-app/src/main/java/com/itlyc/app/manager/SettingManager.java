@@ -4,10 +4,13 @@ import com.itlyc.app.interceptor.UserHolder;
 import com.itlyc.domain.db.Notification;
 import com.itlyc.domain.db.Question;
 import com.itlyc.domain.db.User;
+import com.itlyc.domain.vo.PageBeanVo;
 import com.itlyc.domain.vo.SettingVo;
+import com.itlyc.service.db.BlackListService;
 import com.itlyc.service.db.NotificationService;
 import com.itlyc.service.db.QuestionService;
 import org.apache.dubbo.config.annotation.Reference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +27,8 @@ public class SettingManager {
     private NotificationService notificationService;
     @Reference
     private QuestionService questionService;
+    @Reference
+    private BlackListService blackListService;
     /**
      * 查询用户通用设置选项
      * @return
@@ -60,7 +65,7 @@ public class SettingManager {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResponseEntity saveQuestion(String content) {
+    public ResponseEntity setQuestion(String content) {
 
         Long userId = UserHolder.get().getId();
 
@@ -77,5 +82,57 @@ public class SettingManager {
         }
 
         return ResponseEntity.ok(null);
+    }
+
+    /**
+     * 修改通知设置
+     * @param notificationParam 通知对象
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseEntity setNotification(Notification notificationParam) {
+
+        Long userId = UserHolder.get().getId();
+
+        Notification notification = notificationService.findByUserId(userId);
+
+        // 修改
+        if(notification != null){
+            notificationParam.setId(notification.getId());
+            notificationService.update(notificationParam);
+        }else {
+            notificationParam.setUserId(userId);
+            notificationService.save(notificationParam);
+        }
+
+        return ResponseEntity.ok(null);
+    }
+
+    /**
+     * 查询用户黑名单
+     * @param pageNum 页码
+     * @param pageSize 每页条数
+     * @return
+     */
+    public ResponseEntity findBlackListByPage(Integer pageNum, Integer pageSize) {
+
+
+        Long userId = UserHolder.get().getId();
+
+        PageBeanVo pageBeanVo = blackListService.findBlackListByPage(userId,pageNum,pageSize);
+
+        return ResponseEntity.ok(pageBeanVo);
+    }
+
+    /**
+     * 删除用户黑名单
+     * @param blackId 黑名单用户id
+     * @return
+     */
+    public void deleteBlackList(Long blackId) {
+
+        Long userId = UserHolder.get().getId();
+
+        blackListService.deleteBlackList(userId,blackId);
     }
 }

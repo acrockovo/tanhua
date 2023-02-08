@@ -1,12 +1,11 @@
 package com.itlyc.app.controller;
 
 import com.itlyc.app.manager.SettingManager;
+import com.itlyc.domain.db.Notification;
+import org.apache.coyote.OutputBuffer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -36,10 +35,48 @@ public class SettingController {
      * @return
      */
     @PostMapping("/users/questions")
-    public ResponseEntity saveQuestion(@RequestBody Map<String,String> map){
+    public ResponseEntity setQuestion(@RequestBody Map<String,String> map){
 
         String content = map.get("content");
 
-        return settingManager.saveQuestion(content);
+        return settingManager.setQuestion(content);
+    }
+
+    /**
+     * 修改通知设置
+     * @param notification 通知对象
+     * @return
+     */
+    @PostMapping("/users/notifications/setting")
+    public ResponseEntity setNotification(@RequestBody Notification notification){
+        return settingManager.setNotification(notification);
+    }
+
+    /**
+     * 查询用户黑名单
+     * @param pageNum 页码
+     * @param pageSize 每页条数
+     * @return
+     */
+    @GetMapping("/users/blacklist")
+    public ResponseEntity findBlackListByPage(
+            @RequestParam(value = "page", defaultValue = "1") Integer pageNum,
+            @RequestParam(value = "pagesize", defaultValue = "8") Integer pageSize
+
+    ){
+        return settingManager.findBlackListByPage(pageNum,pageSize);
+    }
+
+    /**
+     * 删除用户黑名单
+     * @param blackId 黑名单用户id
+     * @return
+     */
+    @DeleteMapping("/users/blacklist/{uid}")
+    public ResponseEntity deleteBlackList(@PathVariable("uid") Long blackId){
+
+        settingManager.deleteBlackList(blackId);
+
+        return ResponseEntity.ok(null);
     }
 }

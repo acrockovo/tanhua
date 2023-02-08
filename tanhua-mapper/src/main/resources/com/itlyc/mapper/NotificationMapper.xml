@@ -6,4 +6,33 @@
     <select id="findByUserId" resultType="com.itlyc.domain.db.Notification">
         select * from tb_notification where user_id = #{id}
     </select>
+
+    <insert id="save" useGeneratedKeys="true">
+        insert into tb_notification(
+            user_id,
+            like_notification,
+            pinglun_notification,
+            gonggao_notification)
+        values (
+            #{userId},
+            #{likeNotification},
+            #{pinglunNotification},
+            #{gonggaoNotification}
+        )
+    </insert>
+    <update id="update">
+       update tb_notification
+       <set>
+           <if test="likeNotification != null">
+               like_notification = #{likeNotification},
+           </if>
+           <if test="pinglunNotification != null">
+               pinglun_notification = #{pinglunNotification},
+           </if>
+           <if test="gonggaoNotification != null">
+               gonggao_notification = #{gonggaoNotification},
+           </if>
+       </set>
+       where id = #{id}
+    </update>
 </mapper>

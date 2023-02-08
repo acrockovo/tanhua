@@ -10,4 +10,8 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface NotificationMapper {
     Notification findByUserId(@Param("id") Long userId);
+
+    void update(Notification notificationParam);
+
+    void save(Notification notificationParam);
 }

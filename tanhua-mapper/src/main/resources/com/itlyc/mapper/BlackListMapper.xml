@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itlyc.mapper.BlackListMapper">
+    <select id="findBlackListByPage" resultType="com.itlyc.domain.db.UserInfo">
+        SELECT
+            *
+        FROM
+            tb_black_list b
+            LEFT JOIN tb_user_info u ON b.black_user_id = u.id
+        WHERE
+            user_id = #{userId}
+    </select>
+
+    <delete id="deleteBlackList">
+        delete from tb_black_list where user_id = #{userId} and id = #{blackId}
+    </delete>
+</mapper>

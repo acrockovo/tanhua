@@ -17,6 +17,11 @@
             <artifactId>tanhua-domain</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.itlyc</groupId>
+            <artifactId>tanhua-mapper</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 </project>

@@ -8,8 +8,7 @@
     </select>
 
     <insert id="save">
-        insert into tb_question values
-        (#{strangerQuestion})
+        insert into tb_question(stranger_question) values(#{strangerQuestion})
     </insert>
 
     <update id="update">
