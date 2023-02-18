@@ -3,11 +3,11 @@ spring:
     nacos:
       discovery:
         server-addr: ${nacos.server.addr}
-        namespace: 1927dd15-b67f-4982-b4a4-7d44b9646969
+        namespace: a4329459-77d3-4ffa-80c3-828810fb83b6
       config:
-        server-addr: 121.36.40.249:8848 # 配置中心地址
+        server-addr: 127.0.0.1:8848 # 配置中心地址
         file-extension: yaml
-        namespace: 1927dd15-b67f-4982-b4a4-7d44b9646969
+        namespace: a4329459-77d3-4ffa-80c3-828810fb83b6
         group: TANHUA_GROUP
         ext-config:
           - refresh: true
@@ -27,8 +27,8 @@ dubbo:
     name: dubbo
     port: 20882
   registry:
-    address: nacos://121.36.40.249:8848
-    parameters[namespace]: 1927dd15-b67f-4982-b4a4-7d44b9646969 # 注册到指定的namespace命名空间中
+    address: nacos://127.0.0.1:8848
+    parameters[namespace]: a4329459-77d3-4ffa-80c3-828810fb83b6 # 注册到指定的namespace命名空间中
   scan:
     base-packages: com.itlyc.app
   consumer:

@@ -1,6 +1,6 @@
 spring:
   application:
-    name: tanhua-db-service
+    name: tanhua-mongo-service
   cloud:
     nacos:
       discovery:
@@ -13,17 +13,17 @@ spring:
         group: TANHUA_GROUP
         ext-config:
           - refresh: true
-            data-id: tanhua-mapper.yaml
+            data-id: tanhua-mongo.yaml
             group: TANHUA_GROUP
 
 dubbo:
   application:
-    name: tanhua-db-service
+    name: tanhua-mongo-service
   protocol:
     name: dubbo
-    port: 20881
+    port: 20883
   registry:
     address: nacos://127.0.0.1:8848
     parameters[namespace]: a4329459-77d3-4ffa-80c3-828810fb83b6 # 注册到指定的namespace命名空间中
   scan:
-    base-packages: com.itlyc.service
+    base-packages: com.itlyc

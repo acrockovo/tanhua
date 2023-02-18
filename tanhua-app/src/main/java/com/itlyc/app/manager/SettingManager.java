@@ -10,7 +10,6 @@ import com.itlyc.service.db.BlackListService;
 import com.itlyc.service.db.NotificationService;
 import com.itlyc.service.db.QuestionService;
 import org.apache.dubbo.config.annotation.Reference;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

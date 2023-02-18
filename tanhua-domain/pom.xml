@@ -17,7 +17,7 @@
             <artifactId>tanhua-commons</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-        <!--SpringDataMongo起步依赖
+
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-mongodb</artifactId>
@@ -27,7 +27,7 @@
                 <artifactId>mongodb-driver-sync</artifactId>
                 <version>3.9.1</version>
             </dependency>
-         -->
+
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>

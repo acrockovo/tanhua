@@ -16,6 +16,8 @@
         <module>tanhua-db-service</module>
         <module>tanhua-autoconfig</module>
         <module>tanhua-app</module>
+        <module>tanhua-mongo-interface</module>
+        <module>tanhua-mongo-service</module>
     </modules>
 
     <!--springboot父工程-->
