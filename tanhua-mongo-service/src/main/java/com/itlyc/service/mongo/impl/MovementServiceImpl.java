@@ -4,16 +4,19 @@ import com.itlyc.domain.mongo.Friend;
 import com.itlyc.domain.mongo.FriendMovement;
 import com.itlyc.domain.mongo.Movement;
 import com.itlyc.domain.mongo.MyMovement;
+import com.itlyc.domain.vo.PageBeanVo;
 import com.itlyc.service.mongo.MovementService;
 import com.itlyc.util.ConstantUtil;
 import org.apache.dubbo.config.annotation.Service;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -75,5 +78,46 @@ public class MovementServiceImpl implements MovementService {
             }
         }
 
+    }
+
+    /**
+     * 查找个人动态
+     * @param pageNum 页码
+     * @param pageSize 每页条数
+     * @param userId 用户id
+     * @return
+     */
+    @Override
+    public PageBeanVo findMyMovementByPage(Integer pageNum, Integer pageSize, Long userId) {
+
+        // 设置分页对象并按照时间排序
+        Query query = new Query()
+                .skip((pageNum - 1) * pageSize).limit(pageSize)
+                .with(Sort.by(Sort.Order.desc("Created")));
+
+        // 查询到我的动态列表
+        List<MyMovement> myMovements = mongoTemplate.find(query, MyMovement.class, ConstantUtil.MOVEMENT_MINE + userId);
+
+        // 动态未审核通过的数量
+        int failStateCount = 0;
+
+        List<Movement> movements = new ArrayList<>();
+
+        if(!CollectionUtils.isEmpty(myMovements)){
+            for (MyMovement myMovement : myMovements) {
+                ObjectId movementId = myMovement.getPublishId();
+                Movement movement = mongoTemplate.findById(movementId, Movement.class);
+                if(movement.getState() == 1){
+                    movements.add(movement);
+                }else {
+                    failStateCount ++;
+                }
+            }
+        }
+
+        // 查询我的动态列表数量
+        long count = mongoTemplate.count(query, MyMovement.class, ConstantUtil.MOVEMENT_MINE + userId);
+
+        return new PageBeanVo(pageNum,pageSize,count - failStateCount,movements);
     }
 }

@@ -3,7 +3,11 @@ package com.itlyc.app.manager;
 import cn.hutool.core.util.ArrayUtil;
 import com.itlyc.app.interceptor.UserHolder;
 import com.itlyc.autoconfig.oss.OssTemplate;
+import com.itlyc.domain.db.UserInfo;
 import com.itlyc.domain.mongo.Movement;
+import com.itlyc.domain.vo.MovementVo;
+import com.itlyc.domain.vo.PageBeanVo;
+import com.itlyc.service.db.UserInfoService;
 import com.itlyc.service.mongo.MovementService;
 import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +27,8 @@ public class MovementManager {
     private MovementService movementService;
     @Autowired
     private OssTemplate ossTemplate;
+    @Reference
+    private UserInfoService userInfoService;
     /**
      * 上传动态
      * @param movement 动态详情实体
@@ -52,5 +58,37 @@ public class MovementManager {
         movementService.save(movement);
 
         return ResponseEntity.ok(null);
+    }
+
+    /**
+     * 查找个人动态
+     * @param page 页码
+     * @param pageSize 每页条数
+     * @param userId 用户id
+     * @return
+     */
+    public ResponseEntity findMyMovementByPage(Integer page, Integer pageSize, Long userId) {
+
+        PageBeanVo pageBeanVo = movementService.findMyMovementByPage(page,pageSize,userId);
+
+        // 查询用户个人信息
+        UserInfo userInfo = userInfoService.findById(userId);
+
+        List<MovementVo> movementVoList = new ArrayList<>();
+
+        List<Movement> items = (List<Movement>) pageBeanVo.getItems();
+        if(!CollectionUtils.isEmpty(items)){
+            for (Movement movement : items) {
+                MovementVo movementVo = new MovementVo();
+                movementVo.setUserInfo(userInfo);
+                movementVo.setMovement(movement);
+
+                movementVoList.add(movementVo);
+            }
+        }
+
+        pageBeanVo.setItems(movementVoList);
+
+        return ResponseEntity.ok(pageBeanVo);
     }
 }
