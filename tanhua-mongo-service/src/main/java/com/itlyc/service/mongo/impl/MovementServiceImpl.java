@@ -88,7 +88,7 @@ public class MovementServiceImpl implements MovementService {
      * @return
      */
     @Override
-    public PageBeanVo findMyMovementByPage(Integer pageNum, Integer pageSize, Long userId) {
+    public PageBeanVo findMyMovementByPage(int pageNum, int pageSize, Long userId) {
 
         // 设置分页对象并按照时间排序
         Query query = new Query()
@@ -119,5 +119,50 @@ public class MovementServiceImpl implements MovementService {
         long count = mongoTemplate.count(query, MyMovement.class, ConstantUtil.MOVEMENT_MINE + userId);
 
         return new PageBeanVo(pageNum,pageSize,count - failStateCount,movements);
+    }
+
+    /**
+     * 查询好友动态列表
+     * @param page 页码
+     * @param pageSize 每页条数
+     * @param pageSize 当前用户id
+     * @return
+     */
+    @Override
+    public PageBeanVo getFriendMovements(int page, int pageSize, Long userId) {
+
+        // 定义分页查询条件
+        Query query = new Query()
+                .skip((page - 1) * pageSize).limit(pageSize)
+                .with(Sort.by(Sort.Order.desc("created")));
+
+        // 查询好友列表中好友发布的动态
+        List<FriendMovement> friendMovements = mongoTemplate.find(query, FriendMovement.class, ConstantUtil.MOVEMENT_FRIEND + userId);
+
+        List<Movement> movements = new ArrayList<>();
+
+        // 未审核通过的动态数量
+        int failStateCount = 0;
+
+        if(!CollectionUtils.isEmpty(friendMovements)){
+            for (FriendMovement friendMovement : friendMovements) {
+
+                ObjectId movementId = friendMovement.getPublishId();
+
+                Movement movement = mongoTemplate.findById(movementId, Movement.class);
+
+                // 判断动态是否审核通过
+                if(movement.getState() == 1){
+                    movements.add(movement);
+                }else {
+                    failStateCount ++;
+                }
+
+            }
+        }
+
+        long count = mongoTemplate.count(query, ConstantUtil.MOVEMENT_FRIEND + userId);
+
+        return new PageBeanVo(page, pageSize,count - failStateCount , movements);
     }
 }

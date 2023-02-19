@@ -67,7 +67,7 @@ public class MovementManager {
      * @param userId 用户id
      * @return
      */
-    public ResponseEntity findMyMovementByPage(Integer page, Integer pageSize, Long userId) {
+    public ResponseEntity findMyMovementByPage(int page, int pageSize, Long userId) {
 
         PageBeanVo pageBeanVo = movementService.findMyMovementByPage(page,pageSize,userId);
 
@@ -79,6 +79,42 @@ public class MovementManager {
         List<Movement> items = (List<Movement>) pageBeanVo.getItems();
         if(!CollectionUtils.isEmpty(items)){
             for (Movement movement : items) {
+                MovementVo movementVo = new MovementVo();
+                movementVo.setUserInfo(userInfo);
+                movementVo.setMovement(movement);
+
+                movementVoList.add(movementVo);
+            }
+        }
+
+        pageBeanVo.setItems(movementVoList);
+
+        return ResponseEntity.ok(pageBeanVo);
+    }
+
+    /**
+     * 查询好友动态列表
+     * @param page 页码
+     * @param pageSize 每页条数
+     * @return
+     */
+    public ResponseEntity getFriendMovements(int page, int pageSize) {
+
+        Long userId = UserHolder.get().getId();
+
+        PageBeanVo pageBeanVo = movementService.getFriendMovements(page,pageSize,userId);
+
+        List<MovementVo> movementVoList = new ArrayList<>();
+
+        List<Movement> items = (List<Movement>) pageBeanVo.getItems();
+
+        if(!CollectionUtils.isEmpty(items)){
+            for (Movement movement : items) {
+                // 从动态详情表中得到发布这条动态的用户id
+                Long friendId = movement.getUserId();
+                // 查询用户个人信息
+                UserInfo userInfo = userInfoService.findById(friendId);
+
                 MovementVo movementVo = new MovementVo();
                 movementVo.setUserInfo(userInfo);
                 movementVo.setMovement(movement);

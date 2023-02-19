@@ -13,5 +13,8 @@ public interface MovementService {
     void save(Movement movement);
 
     // 查询个人动态
-    PageBeanVo findMyMovementByPage(Integer page, Integer pageSize, Long userId);
+    PageBeanVo findMyMovementByPage(int page, int pageSize, Long userId);
+
+    // 查询好友动态列表
+    PageBeanVo getFriendMovements(int page, int pageSize, Long userId);
 }

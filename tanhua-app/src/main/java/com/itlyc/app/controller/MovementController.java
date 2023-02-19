@@ -44,10 +44,24 @@ public class MovementController {
      */
     @GetMapping("/movements/all")
     public ResponseEntity findMyMovementByPage(
-            @RequestParam(value = "page", defaultValue = "1") Integer page,
-            @RequestParam(value = "pageSize", defaultValue = "8") Integer pageSize,
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "pageSize", defaultValue = "8") int pageSize,
             Long userId
     ){
         return movementManager.findMyMovementByPage(page,pageSize,userId);
+    }
+
+    /**
+     * 查询好友动态列表
+     * @param page 页码
+     * @param pageSize 每页条数
+     * @return
+     */
+    @GetMapping("/movements")
+    public ResponseEntity getFriendMovements(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "pageSize", defaultValue = "8") int pageSize
+    ){
+      return movementManager.getFriendMovements(page, pageSize);
     }
 }
