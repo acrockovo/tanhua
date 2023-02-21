@@ -127,4 +127,37 @@ public class MovementManager {
 
         return ResponseEntity.ok(pageBeanVo);
     }
+
+
+    /**
+     * 推荐动态查询
+     * @param pageNum 页码
+     * @param pageSize 每页条数
+     * @return
+     */
+    public ResponseEntity findRecommendMovementByPage(int pageNum, int pageSize) {
+
+        Long userId = UserHolder.get().getId();
+
+        PageBeanVo pageBeanVo = movementService.findRecommendMovementByPage(pageNum,pageSize,userId);
+
+        List<Movement> items = (List<Movement>) pageBeanVo.getItems();
+
+        List<MovementVo> movementVoList = new ArrayList<>();
+
+        if(!CollectionUtils.isEmpty(items)){
+            for (Movement movement : items) {
+                Long friendId = movement.getUserId();
+                UserInfo userInfo = userInfoService.findById(friendId);
+
+                MovementVo movementVo = new MovementVo();
+                movementVo.setUserInfo(userInfo);
+                movementVo.setMovement(movement);
+
+                movementVoList.add(movementVo);
+            }
+        }
+        pageBeanVo.setItems(movementVoList);
+        return ResponseEntity.ok(pageBeanVo);
+    }
 }

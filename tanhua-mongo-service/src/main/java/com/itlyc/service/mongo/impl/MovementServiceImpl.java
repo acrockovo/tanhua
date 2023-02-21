@@ -1,9 +1,6 @@
 package com.itlyc.service.mongo.impl;
 
-import com.itlyc.domain.mongo.Friend;
-import com.itlyc.domain.mongo.FriendMovement;
-import com.itlyc.domain.mongo.Movement;
-import com.itlyc.domain.mongo.MyMovement;
+import com.itlyc.domain.mongo.*;
 import com.itlyc.domain.vo.PageBeanVo;
 import com.itlyc.service.mongo.MovementService;
 import com.itlyc.util.ConstantUtil;
@@ -164,5 +161,44 @@ public class MovementServiceImpl implements MovementService {
         long count = mongoTemplate.count(query, ConstantUtil.MOVEMENT_FRIEND + userId);
 
         return new PageBeanVo(page, pageSize,count - failStateCount , movements);
+    }
+
+    /**
+     * 查询推荐动态列表
+     * @param pageNum 页码
+     * @param pageSize 每页条数
+     * @param userId 当前登录用户id
+     * @return
+     */
+    @Override
+    public PageBeanVo findRecommendMovementByPage(int pageNum, int pageSize, Long userId) {
+
+        Query query = new Query(
+            Criteria.where("userId").is(userId)
+        ).skip((pageNum - 1) * pageSize).limit(pageSize)
+                .with(Sort.by(Sort.Order.desc("created")));
+
+        List<RecommendMovement> recommendMovementList = mongoTemplate.find(query, RecommendMovement.class);
+
+        // 审核未通过的动态数量
+        int failStatCount = 0;
+
+        List<Movement> movementList = new ArrayList<>();
+
+        if(!CollectionUtils.isEmpty(recommendMovementList)){
+            for (RecommendMovement recommendMovement : recommendMovementList) {
+                ObjectId movementId = recommendMovement.getPublishId();
+                Movement movement = mongoTemplate.findById(movementId, Movement.class);
+                if(movement.getState() == 1){
+                    movementList.add(movement);
+                }else {
+                    failStatCount ++;
+                }
+            }
+        }
+
+        long count = mongoTemplate.count(query, RecommendMovement.class);
+
+        return new PageBeanVo(pageNum, pageSize,count - failStatCount, movementList);
     }
 }

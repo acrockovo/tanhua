@@ -4,10 +4,7 @@ import com.itlyc.app.manager.MovementManager;
 import com.itlyc.domain.mongo.Movement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -46,8 +43,7 @@ public class MovementController {
     public ResponseEntity findMyMovementByPage(
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "pageSize", defaultValue = "8") int pageSize,
-            Long userId
-    ){
+            Long userId){
         return movementManager.findMyMovementByPage(page,pageSize,userId);
     }
 
@@ -60,8 +56,20 @@ public class MovementController {
     @GetMapping("/movements")
     public ResponseEntity getFriendMovements(
             @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "pageSize", defaultValue = "8") int pageSize
-    ){
+            @RequestParam(value = "pageSize", defaultValue = "8") int pageSize){
       return movementManager.getFriendMovements(page, pageSize);
+    }
+
+    /**
+     * 推荐动态查询
+     * @param pageNum 页码
+     * @param pageSize 每页条数
+     * @return
+     */
+    @GetMapping("/movements/recommend")
+    public ResponseEntity findRecommendMovementByPage(
+            @RequestParam(value = "page", defaultValue = "1") int pageNum,
+            @RequestParam(value = "pageSize", defaultValue = "8") int pageSize){
+        return movementManager.findRecommendMovementByPage(pageNum,pageSize);
     }
 }

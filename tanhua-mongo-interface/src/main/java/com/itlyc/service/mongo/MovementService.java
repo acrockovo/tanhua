@@ -17,4 +17,7 @@ public interface MovementService {
 
     // 查询好友动态列表
     PageBeanVo getFriendMovements(int page, int pageSize, Long userId);
+
+    // 查询推荐动态
+    PageBeanVo findRecommendMovementByPage(int pageNum, int pageSize, Long userId);
 }
