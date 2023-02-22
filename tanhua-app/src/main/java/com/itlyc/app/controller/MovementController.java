@@ -72,4 +72,44 @@ public class MovementController {
             @RequestParam(value = "pageSize", defaultValue = "8") int pageSize){
         return movementManager.findRecommendMovementByPage(pageNum,pageSize);
     }
+
+    /**
+     * 动态点赞
+     * @param movementId 动态id
+     * @return
+     */
+    @GetMapping("/movements/{movementId}/like")
+    public ResponseEntity saveMovementTypeLike(@PathVariable String movementId){
+        return movementManager.saveMovementType(movementId,1);
+    }
+
+    /**
+     * 取消点赞
+     * @param movementId 动态id
+     * @return
+     */
+    @GetMapping("/movements/{movementId}/dislike")
+    public ResponseEntity deleteMovementTypeLike(@PathVariable String movementId){
+        return movementManager.deleteMovementType(movementId,1);
+    }
+
+    /**
+     * 动态喜欢
+     * @param movementId 动态id
+     * @return
+     */
+    @GetMapping("/movements/{movementId}/love")
+    public ResponseEntity saveMovementTypeMove(@PathVariable String movementId){
+        return movementManager.saveMovementType(movementId,3);
+    }
+
+    /**
+     * 取消动态喜欢
+     * @param movementId 动态id
+     * @return
+     */
+    @GetMapping("/movements/{movementId}/unlove")
+    public ResponseEntity deleteMovementTypeMove(@PathVariable String movementId){
+        return movementManager.deleteMovementType(movementId,3);
+    }
 }
