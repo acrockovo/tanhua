@@ -201,7 +201,11 @@ public class MovementManager {
         int count = commentService.saveMovementType(comment);
 
         // 往redis中存入点赞标识
-        redisTemplate.opsForValue().set(StrUtil.format(ConstantUtil.MOVEMENT_LIKE,userId,movementId),"1");
+        if(commentType == 1){
+            redisTemplate.opsForValue().set(StrUtil.format(ConstantUtil.MOVEMENT_LIKE,userId,movementId),"1");
+        }else if(commentType == 3){
+            redisTemplate.opsForValue().set(StrUtil.format(ConstantUtil.MOVEMENT_LOVE,userId,movementId),"1");
+        }
 
         return ResponseEntity.ok(count);
     }
@@ -217,7 +221,11 @@ public class MovementManager {
 
         int count = commentService.deleteMovementType(movementId, commentType, userId);
 
-        redisTemplate.delete(StrUtil.format(ConstantUtil.MOVEMENT_LIKE,userId,movementId));
+        if(commentType == 1){
+            redisTemplate.delete(StrUtil.format(ConstantUtil.MOVEMENT_LIKE,userId,movementId));
+        }else if(commentType == 3){
+            redisTemplate.delete(StrUtil.format(ConstantUtil.MOVEMENT_LOVE,userId,movementId));
+        }
 
         return ResponseEntity.ok(count);
     }
