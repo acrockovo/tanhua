@@ -201,4 +201,15 @@ public class MovementServiceImpl implements MovementService {
 
         return new PageBeanVo(pageNum, pageSize,count - failStatCount, movementList);
     }
+
+    /**
+     * 查找单条动态
+     * @param movementId 动态id
+     * @return
+     */
+    @Override
+    public Movement findMovementByMovementId(String movementId) {
+
+        return mongoTemplate.findById(new ObjectId(movementId),Movement.class);
+    }
 }

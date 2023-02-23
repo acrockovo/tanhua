@@ -1,5 +1,6 @@
 package com.itlyc.app.manager;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import com.itlyc.app.interceptor.UserHolder;
@@ -7,6 +8,7 @@ import com.itlyc.autoconfig.oss.OssTemplate;
 import com.itlyc.domain.db.UserInfo;
 import com.itlyc.domain.mongo.Comment;
 import com.itlyc.domain.mongo.Movement;
+import com.itlyc.domain.vo.CommentVo;
 import com.itlyc.domain.vo.MovementVo;
 import com.itlyc.domain.vo.PageBeanVo;
 import com.itlyc.service.db.UserInfoService;
@@ -25,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.sql.Struct;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -226,7 +229,76 @@ public class MovementManager {
         }else if(commentType == 3){
             redisTemplate.delete(StrUtil.format(ConstantUtil.MOVEMENT_LOVE,userId,movementId));
         }
-
         return ResponseEntity.ok(count);
+    }
+
+    /**
+     * 查询动态评论列表
+     * @param pageNum 页码
+     * @param pageSize 每页条数
+     * @param movementId 动态id
+     * @return
+     */
+    public ResponseEntity findMovementComment(Integer pageNum, Integer pageSize, String movementId) {
+
+        PageBeanVo pageBeanVo = commentService.findMovementComment(pageNum, pageSize, movementId);
+
+        List<Comment> items = (List<Comment>) pageBeanVo.getItems();
+        List<CommentVo> commentVoList = new ArrayList<>();
+        if(!CollectionUtils.isEmpty(items)){
+            for (Comment comment : items) {
+                UserInfo userInfo = userInfoService.findById(comment.getUserId());
+                CommentVo commentVo = new CommentVo();
+                commentVo.setAvatar(userInfo.getAvatar());
+                commentVo.setNickname(userInfo.getNickname());
+                commentVo.setId(comment.getId().toString());
+                commentVo.setContent(comment.getContent());
+                commentVo.setCreateDate(DateUtil.format(new Date(comment.getCreated()),"yyyy-MM-dd HH:mm:ss"));
+
+                commentVoList.add(commentVo);
+            }
+        }
+        pageBeanVo.setItems(commentVoList);
+        return ResponseEntity.ok(pageBeanVo);
+    }
+
+    /**
+     * 查找单条动态
+     * @param movementId
+     * @return
+     */
+    public ResponseEntity findMovementByMovementId(String movementId) {
+
+        Movement movement = movementService.findMovementByMovementId(movementId);
+
+        UserInfo userInfo = userInfoService.findById(movement.getUserId());
+        MovementVo movementVo = new MovementVo();
+        movementVo.setUserInfo(userInfo);
+        movementVo.setMovement(movement);
+
+        return ResponseEntity.ok(movementVo);
+    }
+
+    /**
+     * 保存评论内容
+     * @param movementId 动态id
+     * @param content 评论内容
+     * @return
+     */
+    public ResponseEntity saveMovementComment(String movementId, String content) {
+
+        //1.封装comment
+        Comment comment = new Comment();
+        comment.setCreated(System.currentTimeMillis());//创建时间
+        comment.setPublishId(new ObjectId(movementId));//动态id
+        comment.setCommentType(2);//类型为评论
+        comment.setUserId(UserHolder.get().getId());//评论人id
+        comment.setContent(content);//评论内容
+
+        //2.调用service保存评论
+        int count = commentService.saveMovementType(comment);
+
+        //根据接口文档应该无数据返回
+        return ResponseEntity.ok(null);
     }
 }

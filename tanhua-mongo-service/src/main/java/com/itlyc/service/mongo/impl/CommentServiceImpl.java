@@ -2,6 +2,7 @@ package com.itlyc.service.mongo.impl;
 
 import com.itlyc.domain.mongo.Comment;
 import com.itlyc.domain.mongo.Movement;
+import com.itlyc.domain.vo.PageBeanVo;
 import com.itlyc.service.mongo.CommentService;
 import org.apache.dubbo.config.annotation.Service;
 import org.bson.types.ObjectId;
@@ -9,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+
+import java.util.List;
 
 
 @Service
@@ -108,5 +111,28 @@ public class CommentServiceImpl implements CommentService {
             return movement.getLoveCount();
         }
         return 0;
+    }
+
+    /**
+     * 查询动态评论列表
+     * @param pageNum 页码
+     * @param pageSize 每页条数
+     * @param movementId 动态id
+     * @return
+     */
+    @Override
+    public PageBeanVo findMovementComment(Integer pageNum, Integer pageSize, String movementId) {
+
+        Query query = new Query(
+                Criteria.where("publishId").is(new ObjectId(movementId))
+                .and("commentType").is(2)
+        ).skip((pageNum - 1) * pageSize).limit(pageSize);
+
+
+        List<Comment> commentList = mongoTemplate.find(query, Comment.class);
+
+        long count = mongoTemplate.count(query, Comment.class);
+
+        return new PageBeanVo(pageNum, pageSize, count, commentList);
     }
 }

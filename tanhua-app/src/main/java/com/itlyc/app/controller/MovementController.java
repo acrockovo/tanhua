@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * 动态详情控制器
@@ -111,5 +112,46 @@ public class MovementController {
     @GetMapping("/movements/{movementId}/unlove")
     public ResponseEntity deleteMovementTypeMove(@PathVariable String movementId){
         return movementManager.deleteMovementType(movementId,3);
+    }
+
+    /**
+     * 查找单条动态
+     * @param movementId 动态id
+     * @return
+     */
+    @GetMapping("/movements/{movementId}")
+    public ResponseEntity findMovementByMovementId(@PathVariable String movementId){
+        return movementManager.findMovementByMovementId(movementId);
+    }
+
+    /**
+     * 查询动态评论列表
+     * @param pageNum 页码
+     * @param pageSize 每页条数
+     * @param movementId 动态id
+     * @return
+     */
+    @GetMapping("/comments")
+    public ResponseEntity findMovementComment(
+            @RequestParam(value = "page",defaultValue = "1") Integer pageNum,
+            @RequestParam(value = "pageSize",defaultValue = "8") Integer pageSize,
+            @RequestParam String movementId){
+        return movementManager.findMovementComment(pageNum,pageSize,movementId);
+    }
+
+    /**
+     * 保存动态评论内容
+     * @param map 评论对象
+     * @return
+     */
+    @PostMapping("/comments")
+    public ResponseEntity saveMovementComment(@RequestBody Map<String,String> map){
+
+        //1.获取动态id和评论内容
+        String movementId = map.get("movementId");
+        String content = map.get("comment");
+
+        //2.调用manager保存评论
+        return movementManager.saveMovementComment(movementId,content);
     }
 }

@@ -20,4 +20,6 @@ public interface MovementService {
 
     // 查询推荐动态
     PageBeanVo findRecommendMovementByPage(int pageNum, int pageSize, Long userId);
+
+    Movement findMovementByMovementId(String movementId);
 }
