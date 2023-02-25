@@ -54,4 +54,19 @@ public class RecommendUserServiceImpl implements RecommendUserService {
 
         return new PageBeanVo(pageNum, pageSize, count, recommendUserList);
     }
+
+    /**
+     * 查找推荐好友详细信息
+     * @param recommendUserId 推荐人id
+     * @param userId 当前登录用户id
+     * @return
+     */
+    @Override
+    public RecommendUser findPersonal(Long recommendUserId, Long userId) {
+        Query query = new Query(
+                Criteria.where("userId").is(recommendUserId)
+                .and("toUserId").is(userId)
+        );
+        return mongoTemplate.findOne(query, RecommendUser.class);
+    }
 }

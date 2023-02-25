@@ -4,6 +4,7 @@ import com.itlyc.app.manager.MakeFriendManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,5 +34,15 @@ public class MakeFriendController {
             @RequestParam(value = "page", defaultValue = "1") Integer pageNum,
             @RequestParam(value = "pageSize", defaultValue = "8") Integer pageSize){
         return makeFriendManager.findRecommendUserByPage(pageNum, pageSize);
+    }
+
+    /**
+     * 查找单条推荐人信息
+     * @param recommendUserId 推荐人id
+     * @return
+     */
+    @GetMapping("/tanhua/{recommendUserId}/personalInfo")
+    public ResponseEntity findRecommendUserPersonal(@PathVariable Long recommendUserId){
+        return makeFriendManager.findRecommendUserPersonal(recommendUserId);
     }
 }

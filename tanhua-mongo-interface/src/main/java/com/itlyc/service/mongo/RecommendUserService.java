@@ -8,4 +8,6 @@ public interface RecommendUserService {
     RecommendUser findTodayBest(Long userId);
     // 查找推荐好友列表
     PageBeanVo findRecommendUserByPage(Integer pageNum, Integer pageSize, Long userId);
+    // 查找推荐人详细信息
+    RecommendUser findPersonal(Long recommendUserId, Long userId);
 }

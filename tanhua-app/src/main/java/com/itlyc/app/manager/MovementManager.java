@@ -8,6 +8,7 @@ import com.itlyc.autoconfig.oss.OssTemplate;
 import com.itlyc.domain.db.UserInfo;
 import com.itlyc.domain.mongo.Comment;
 import com.itlyc.domain.mongo.Movement;
+import com.itlyc.domain.mongo.RecommendUser;
 import com.itlyc.domain.vo.CommentVo;
 import com.itlyc.domain.vo.MovementVo;
 import com.itlyc.domain.vo.PageBeanVo;
@@ -21,11 +22,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.sql.Struct;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -49,6 +50,7 @@ public class MovementManager {
      * @param imageContent 图片列表
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public ResponseEntity save(Movement movement, MultipartFile[] imageContent) throws IOException {
 
         // 声明存储图片地址集合
@@ -191,6 +193,7 @@ public class MovementManager {
      * @param movementId 动态id
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public ResponseEntity saveMovementType(String movementId,Integer commentType) {
 
         Long userId = UserHolder.get().getId();
@@ -218,6 +221,7 @@ public class MovementManager {
      * @param movementId 动态id
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public ResponseEntity deleteMovementType(String movementId,Integer commentType) {
 
         Long userId = UserHolder.get().getId();
@@ -288,6 +292,7 @@ public class MovementManager {
      * @param content 评论内容
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public ResponseEntity saveMovementComment(String movementId, String content) {
 
         //1.封装comment

@@ -1,5 +1,6 @@
 package com.itlyc.app.manager;
 
+import cn.hutool.core.util.RandomUtil;
 import com.itlyc.app.interceptor.UserHolder;
 import com.itlyc.domain.db.UserInfo;
 import com.itlyc.domain.mongo.RecommendUser;
@@ -8,7 +9,6 @@ import com.itlyc.domain.vo.RecommendUserVo;
 import com.itlyc.service.db.UserInfoService;
 import com.itlyc.service.mongo.RecommendUserService;
 import org.apache.dubbo.config.annotation.Reference;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -82,5 +82,28 @@ public class MakeFriendManager {
         }
         pageBeanVo.setItems(recommendUserVoList);
         return ResponseEntity.ok(pageBeanVo);
+    }
+
+    /**
+     * 查找推荐好友详细信息
+     * @param recommendUserId 推荐人id
+     * @return
+     */
+    public ResponseEntity findRecommendUserPersonal(Long recommendUserId) {
+        Long userId = UserHolder.get().getId();
+        RecommendUser recommendUser = recommendUserService.findPersonal(recommendUserId, userId);
+        // 如果是新用户则缘分值是无法查出的需要新创建一个
+        if(recommendUser == null){
+            recommendUser = new RecommendUser();
+            recommendUser.setScore(RandomUtil.randomDouble(70,90));
+        }
+
+        UserInfo userInfo = userInfoService.findById(recommendUser.getUserId());
+
+        RecommendUserVo recommendUserVo = new RecommendUserVo();
+        recommendUserVo.setUserInfo(userInfo);
+        recommendUserVo.setFateValue(recommendUser.getScore().longValue());
+
+        return ResponseEntity.ok(recommendUserVo);
     }
 }
