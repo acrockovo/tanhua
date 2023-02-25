@@ -1,14 +1,24 @@
 package com.itlyc.app.manager;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.itlyc.app.interceptor.UserHolder;
+import com.itlyc.domain.db.Question;
 import com.itlyc.domain.db.UserInfo;
 import com.itlyc.domain.mongo.RecommendUser;
+import com.itlyc.domain.mongo.Visitor;
 import com.itlyc.domain.vo.PageBeanVo;
 import com.itlyc.domain.vo.RecommendUserVo;
+import com.itlyc.domain.vo.VisitorVo;
+import com.itlyc.service.db.QuestionService;
 import com.itlyc.service.db.UserInfoService;
 import com.itlyc.service.mongo.RecommendUserService;
+import com.itlyc.service.mongo.VisitorService;
+import com.itlyc.util.ConstantUtil;
 import org.apache.dubbo.config.annotation.Reference;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -23,7 +33,12 @@ public class MakeFriendManager {
     private RecommendUserService recommendUserService;
     @Reference
     private UserInfoService userInfoService;
-
+    @Reference
+    private QuestionService questionService;
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+    @Reference
+    private VisitorService visitorService;
     /**
      * 查找今日佳人
      * @return
@@ -59,20 +74,23 @@ public class MakeFriendManager {
 
         PageBeanVo pageBeanVo = recommendUserService.findRecommendUserByPage(pageNum, pageSize, userId);
 
-        List<RecommendUser> items = (List<RecommendUser>) pageBeanVo.getItems();
+        List<RecommendUser> recommendUserList = (List<RecommendUser>) pageBeanVo.getItems();
         // 新用户默认推荐
-        if(CollectionUtils.isEmpty(items)){
+        if(CollectionUtils.isEmpty(recommendUserList)){
             for (int i = 0; i < 10; i++) {
                 RecommendUser recommendUser = new RecommendUser();
                 recommendUser.setUserId(i + 2L);
                 recommendUser.setScore(99D - i);
-                items.add(recommendUser);
+                recommendUser.setToUserId(userId);
+                recommendUserList.add(recommendUser);
             }
+            // 将新增的推荐人保存到mongo中
+            recommendUserService.saveRecommendUser(recommendUserList);
         }
 
         List<RecommendUserVo> recommendUserVoList = new ArrayList<>();
 
-        for (RecommendUser recommendUser : items) {
+        for (RecommendUser recommendUser : recommendUserList) {
             UserInfo userInfo = userInfoService.findById(recommendUser.getUserId());
             RecommendUserVo recommendUserVo = new RecommendUserVo();
             recommendUserVo.setUserInfo(userInfo);
@@ -103,7 +121,60 @@ public class MakeFriendManager {
         RecommendUserVo recommendUserVo = new RecommendUserVo();
         recommendUserVo.setUserInfo(userInfo);
         recommendUserVo.setFateValue(recommendUser.getScore().longValue());
+        // 往mongo中保存谁看了谁的主页
+        visitorService.save(recommendUser.getUserId(),userId);
 
         return ResponseEntity.ok(recommendUserVo);
+    }
+
+    /**
+     * 查找陌生人问题
+     * @param userId 用户id
+     * @return
+     */
+    public ResponseEntity findStrangerQuestions(Long userId) {
+        Question question = questionService.findByUserId(userId);
+        if (question == null) {
+            return ResponseEntity.ok("你是喜欢渣男，还是暗恋靓女？？");
+        }
+        return ResponseEntity.ok(question.getStrangerQuestion());
+    }
+
+    /**
+     * 查找最近访客
+     * @return
+     */
+    public ResponseEntity findVisitorsSinceLastAccessTime() {
+        Long userId = UserHolder.get().getId();
+        // 上次该用户最后登录时间
+        String lastAccessTimeStr = redisTemplate.opsForValue().get(ConstantUtil.LAST_SECOND_ACCESS_TIME + userId);
+        // 将时间戳转换为long类
+        Long lastAccessTime = NumberUtil.isLong(lastAccessTimeStr) ? NumberUtil.parseLong(lastAccessTimeStr) : 0;
+
+        List<Visitor> visitors = visitorService.findVisitorsSinceLastAccessTime(userId, lastAccessTime);
+
+        List<VisitorVo> visitorVoList = new ArrayList<>();
+
+        //4.2 遍历访客集合
+        if (CollUtil.isNotEmpty(visitors)) {
+            for (Visitor visitor : visitors) {
+                //4.3 获取userInfo
+                UserInfo userInfo = userInfoService.findById(visitor.getVisitorUserId());
+                if(visitor.getUserId() == visitor.getVisitorUserId()){
+                    continue;
+                }
+
+                //4.4 封装VisitorInfo
+                VisitorVo visitorVo = new VisitorVo();
+
+                visitorVo.setUserInfo(userInfo);
+                visitorVo.setFateValue(visitor.getScore().longValue());
+
+                //4.5 放入集合中
+                visitorVoList.add(visitorVo);
+            }
+        }
+
+        return ResponseEntity.ok(visitorVoList);
     }
 }

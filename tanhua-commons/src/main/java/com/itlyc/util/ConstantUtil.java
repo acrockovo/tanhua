@@ -22,6 +22,8 @@ public class ConstantUtil {
     public static final String VIDEO_LIKE = "video_like:{}_{}";
     //关注用户
     public static final String FOCUS_USER = "focus_user:{}_{}";
+    //用户最后第二次访问时间
+    public static final String LAST_SECOND_ACCESS_TIME = "last_second_access_time:";
     //用户最后一次访问时间
     public static final String LAST_ACCESS_TIME = "last_access_time:";
 

@@ -45,4 +45,23 @@ public class MakeFriendController {
     public ResponseEntity findRecommendUserPersonal(@PathVariable Long recommendUserId){
         return makeFriendManager.findRecommendUserPersonal(recommendUserId);
     }
+
+    /**
+     * 查找陌生人问题
+     * @param userId 用户id
+     * @return
+     */
+    @GetMapping("/tanhua/strangerQuestions")
+    public ResponseEntity findStrangerQuestions(Long userId){
+        return makeFriendManager.findStrangerQuestions(userId);
+    }
+
+    /**
+     * 查找最近访客
+     * @return
+     */
+    @GetMapping("/movements/visitors")
+    public ResponseEntity findVisitorsSinceLastAccessTime(){
+        return makeFriendManager.findVisitorsSinceLastAccessTime();
+    }
 }
