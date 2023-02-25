@@ -269,6 +269,9 @@ public class MovementManager {
      */
     public ResponseEntity findMovementByMovementId(String movementId) {
 
+        if("visitors".equals(movementId)){
+            return ResponseEntity.ok(null);
+        }
         Movement movement = movementService.findMovementByMovementId(movementId);
 
         UserInfo userInfo = userInfoService.findById(movement.getUserId());
