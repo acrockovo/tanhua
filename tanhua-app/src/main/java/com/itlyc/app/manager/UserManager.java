@@ -20,7 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,7 +67,7 @@ public class UserManager {
     }
 
     /**
-     * 用户登录
+     * 发送验证码
      * @param phone 手机号
      * @return
      */
@@ -131,6 +133,9 @@ public class UserManager {
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("token",token);
         resultMap.put("isNew",isNew);
+        // getAndSet先把以前的值查出来，再进行覆盖
+        String date = redisTemplate.opsForValue().getAndSet(ConstantUtil.LAST_ACCESS_TIME + user.getId(),System.currentTimeMillis() + "");
+        redisTemplate.opsForValue().set(ConstantUtil.LAST_SECOND_ACCESS_TIME + user.getId(),date);
 
         return ResponseEntity.ok(resultMap);
 

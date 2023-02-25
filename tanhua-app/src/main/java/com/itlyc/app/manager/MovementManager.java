@@ -15,7 +15,9 @@ import com.itlyc.domain.vo.PageBeanVo;
 import com.itlyc.service.db.UserInfoService;
 import com.itlyc.service.mongo.CommentService;
 import com.itlyc.service.mongo.MovementService;
+import com.itlyc.service.mongo.VisitorService;
 import com.itlyc.util.ConstantUtil;
+import com.mongodb.Mongo;
 import org.apache.dubbo.config.annotation.Reference;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +46,8 @@ public class MovementManager {
     private CommentService commentService;
     @Autowired
     private StringRedisTemplate redisTemplate;
+    @Reference
+    private VisitorService visitorService;
     /**
      * 上传动态
      * @param movement 动态详情实体
@@ -282,7 +286,8 @@ public class MovementManager {
         MovementVo movementVo = new MovementVo();
         movementVo.setUserInfo(userInfo);
         movementVo.setMovement(movement);
-
+        // 往mongo中保存谁看了谁的主页
+        visitorService.save(movement.getUserId(),UserHolder.get().getId());
         return ResponseEntity.ok(movementVo);
     }
 
@@ -307,6 +312,6 @@ public class MovementManager {
         int count = commentService.saveMovementType(comment);
 
         //根据接口文档应该无数据返回
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(count);
     }
 }

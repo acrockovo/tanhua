@@ -69,4 +69,13 @@ public class RecommendUserServiceImpl implements RecommendUserService {
         );
         return mongoTemplate.findOne(query, RecommendUser.class);
     }
+
+    /**
+     * 保存推荐人
+     * @param recommendUserList 推荐人列表
+     */
+    @Override
+    public void saveRecommendUser(List<RecommendUser> recommendUserList) {
+        mongoTemplate.insertAll(recommendUserList);
+    }
 }
