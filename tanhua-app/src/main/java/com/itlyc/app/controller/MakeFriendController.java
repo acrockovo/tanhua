@@ -79,4 +79,14 @@ public class MakeFriendController {
         return makeFriendManager.saveUserLocation(longitude,latitude,addStr);
     }
 
+    /**
+     * 查找附近的人
+     * @param gender 性别
+     * @param distance 距离
+     * @return
+     */
+    @GetMapping("/tanhua/search")
+    public ResponseEntity searchNear(String gender, int distance){
+        return makeFriendManager.searchNear(gender, distance);
+    }
 }

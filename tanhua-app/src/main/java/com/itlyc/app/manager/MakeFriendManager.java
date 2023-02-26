@@ -8,6 +8,7 @@ import com.itlyc.domain.db.Question;
 import com.itlyc.domain.db.UserInfo;
 import com.itlyc.domain.mongo.RecommendUser;
 import com.itlyc.domain.mongo.Visitor;
+import com.itlyc.domain.vo.NearUserVo;
 import com.itlyc.domain.vo.PageBeanVo;
 import com.itlyc.domain.vo.RecommendUserVo;
 import com.itlyc.domain.vo.VisitorVo;
@@ -17,6 +18,7 @@ import com.itlyc.service.mongo.RecommendUserService;
 import com.itlyc.service.mongo.UserLocationService;
 import com.itlyc.service.mongo.VisitorService;
 import com.itlyc.util.ConstantUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -192,5 +194,34 @@ public class MakeFriendManager {
     public ResponseEntity saveUserLocation(double longitude,double latitude, String addStr) {
         userLocationService.saveOrUpdate(longitude, latitude, addStr, UserHolder.get().getId());
         return ResponseEntity.ok(null);
+    }
+
+    /**
+     * 搜索附近的人
+     * @param gender 性别
+     * @param distance 距离
+     * @return
+     */
+    public ResponseEntity searchNear(String gender, int distance) {
+        List<Long> userIds = userLocationService.searchNear(UserHolder.get().getId(), distance);
+
+        List<NearUserVo> nearUserVoList = new ArrayList<>();
+
+        if(!CollectionUtils.isEmpty(userIds)){
+            for (Long userId : userIds) {
+                UserInfo userInfo = userInfoService.findById(userId);
+                // 判断性别是否合乎要求
+                if(!StringUtils.equals(gender, userInfo.getGender())){
+                    continue;
+                }
+                NearUserVo vo = new NearUserVo();
+                vo.setUserId(userInfo.getId());
+                vo.setAvatar(userInfo.getAvatar());
+                vo.setNickname(userInfo.getNickname());
+
+                nearUserVoList.add(vo);
+            }
+        }
+        return ResponseEntity.ok(nearUserVoList);
     }
 }
