@@ -14,6 +14,7 @@ import com.itlyc.domain.vo.VisitorVo;
 import com.itlyc.service.db.QuestionService;
 import com.itlyc.service.db.UserInfoService;
 import com.itlyc.service.mongo.RecommendUserService;
+import com.itlyc.service.mongo.UserLocationService;
 import com.itlyc.service.mongo.VisitorService;
 import com.itlyc.util.ConstantUtil;
 import org.apache.dubbo.config.annotation.Reference;
@@ -22,6 +23,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +41,8 @@ public class MakeFriendManager {
     private StringRedisTemplate redisTemplate;
     @Reference
     private VisitorService visitorService;
+    @Reference
+    private UserLocationService userLocationService;
     /**
      * 查找今日佳人
      * @return
@@ -176,5 +180,17 @@ public class MakeFriendManager {
         }
 
         return ResponseEntity.ok(visitorVoList);
+    }
+
+    /**
+     * 上报位置对象信息
+     * @param latitude
+     * @param longitude
+     * @param addStr
+     * @return
+     */
+    public ResponseEntity saveUserLocation(double longitude,double latitude, String addStr) {
+        userLocationService.saveOrUpdate(longitude, latitude, addStr, UserHolder.get().getId());
+        return ResponseEntity.ok(null);
     }
 }

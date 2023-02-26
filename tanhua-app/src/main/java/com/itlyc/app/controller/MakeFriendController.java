@@ -3,10 +3,9 @@ package com.itlyc.app.controller;
 import com.itlyc.app.manager.MakeFriendManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 public class MakeFriendController {
@@ -64,4 +63,20 @@ public class MakeFriendController {
     public ResponseEntity findVisitorsSinceLastAccessTime(){
         return makeFriendManager.findVisitorsSinceLastAccessTime();
     }
+
+    /**
+     * 上报自己的位置
+     * @param map 位置对象信息
+     * @return
+     */
+    @PostMapping("/baidu/location")
+    public ResponseEntity saveUserLocation(@RequestBody Map<String,Object> map){
+        double latitude = (double) map.get("latitude");
+        double longitude = (double) map.get("longitude");
+        String addStr = map.get("addrStr").toString();
+
+        System.out.println("上报自己的位置： " + map);
+        return makeFriendManager.saveUserLocation(longitude,latitude,addStr);
+    }
+
 }
