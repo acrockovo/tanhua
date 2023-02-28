@@ -19,6 +19,9 @@ spring:
           - refresh: true
             data-id: tanhua-app-server-port.yaml # 启动端口配置
             group: TANHUA_GROUP
+          - refresh: true
+            data-id: tanhua-fastdfs.yaml # 启动端口配置
+            group: TANHUA_GROUP
 
 dubbo:
   application:

@@ -68,15 +68,12 @@ public class UserLocationServiceImpl implements UserLocationService {
     public List<Long> searchNear(Long id, int distance) {
 
         UserLocation userLocation = mongoTemplate.findOne(new Query(Criteria.where("userId").is(id)), UserLocation.class);
-
         Distance dis = new Distance(distance / 1000, Metrics.KILOMETERS); // 半径
         Circle circle = new Circle(userLocation.getLocation(), dis); // 根据当前用户坐标花圈
-
         Query query = new Query(
                 Criteria.where("location").withinSphere(circle) // 设置范围条件
                         .and("userId").ne(id) // 排除自己
         );
-
         List<UserLocation> userLocations = mongoTemplate.find(query, UserLocation.class);
         List<Long> userIds = new ArrayList<>();
 
@@ -85,7 +82,6 @@ public class UserLocationServiceImpl implements UserLocationService {
                 userIds.add(location.getUserId()); // 遍历获取用户id
             }
         }
-
         return userIds;
     }
 }
