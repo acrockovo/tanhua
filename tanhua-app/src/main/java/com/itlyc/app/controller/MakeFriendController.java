@@ -1,6 +1,7 @@
 package com.itlyc.app.controller;
 
 import com.itlyc.app.manager.MakeFriendManager;
+import com.itlyc.domain.vo.PageBeanVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -88,5 +89,16 @@ public class MakeFriendController {
     @GetMapping("/tanhua/search")
     public ResponseEntity searchNear(String gender, int distance){
         return makeFriendManager.searchNear(gender, distance);
+    }
+
+    /**
+     * 探花卡片查询
+     * @return
+     */
+    @GetMapping("/tanhua/cards")
+    public ResponseEntity tanhuaCards(){
+        ResponseEntity responseEntity = makeFriendManager.findRecommendUserByPage(1, 20);
+        PageBeanVo pageBeanVo = (PageBeanVo) responseEntity.getBody();
+        return ResponseEntity.ok(pageBeanVo.getItems());
     }
 }

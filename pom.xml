@@ -18,6 +18,7 @@
         <module>tanhua-app</module>
         <module>tanhua-mongo-interface</module>
         <module>tanhua-mongo-service</module>
+        <module>tanhua-admin</module>
     </modules>
 
     <!--springboot父工程-->
