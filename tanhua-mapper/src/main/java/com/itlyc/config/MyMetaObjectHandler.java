@@ -1,4 +1,4 @@
-package com.itlyc.comfig;
+package com.itlyc.config;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;
