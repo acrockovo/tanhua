@@ -14,8 +14,12 @@ spring:
             data-id: tanhua-redis.yaml # redis 配置
             group: TANHUA_GROUP
           - refresh: true
-            data-id: tanhua-admin-port.yaml # redis 配置
+            data-id: tanhua-admin-port.yaml # 端口配置
             group: TANHUA_GROUP
+          - refresh: true
+            data-id: tanhua-rocketmq-server.yaml # 端口配置
+            group: TANHUA_GROUP
+
 dubbo:
   application:
     name: tanhua-admin

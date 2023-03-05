@@ -177,8 +177,8 @@ public class UserManager {
                 VideoVo videoVo = new VideoVo();
                 BeanUtils.copyProperties(userInfo,videoVo);
                 BeanUtils.copyProperties(video,videoVo);
-                videoVo.setCover(video.getPicUrl());//视频封面
-                videoVo.setSignature(video.getText());//视频文字
+                videoVo.setCover(video.getPicUrl());
+                videoVo.setSignature(video.getText());
                 videoVoList.add(videoVo);
             }
         }

@@ -22,6 +22,9 @@ spring:
           - refresh: true
             data-id: tanhua-fastdfs.yaml # 启动端口配置
             group: TANHUA_GROUP
+          - refresh: true
+            data-id: tanhua-rocketmq.yaml # rocketmq配置
+            group: TANHUA_GROUP
 
 dubbo:
   application:

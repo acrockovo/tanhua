@@ -1,7 +1,9 @@
 package com.itlyc.app.manager;
 
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
 import com.itlyc.autoconfig.oss.OssTemplate;
+import com.itlyc.domain.db.Log;
 import com.itlyc.domain.db.User;
 import com.itlyc.domain.db.UserInfo;
 import com.itlyc.domain.vo.ErrorResult;
@@ -12,6 +14,7 @@ import com.itlyc.util.ConstantUtil;
 import com.itlyc.util.JwtUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.Reference;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -42,6 +45,8 @@ public class UserManager {
     private UserInfoService userInfoService;
     @Autowired
     private OssTemplate ossTemplate;
+    @Autowired
+    private RocketMQTemplate rocketMQTemplate;
 
     /**
      * 根据手机号查询用户
@@ -103,7 +108,7 @@ public class UserManager {
 
         // 是否为新用户
         boolean isNew;
-
+        String type = "0101"; // 登录
         if(user == null){
             isNew = true;
             user = new User();
@@ -113,10 +118,21 @@ public class UserManager {
             Long id = userService.save(user);
 
             user.setId(id);
+            type = "0102"; // 注册
         }else{
 
             isNew = false;
         }
+
+        // 向rocketmq中发送消息
+        Log log = new Log();
+        log.setUserId(user.getId());
+        log.setType(type);
+        log.setLogTime(DateUtil.formatDate(new Date()));
+        log.setPlace("北京顺义"); // 课下去查询user_location
+        log.setEquipment("华为mate40Pro");
+
+        rocketMQTemplate.convertAndSend("tanhua-log",log);
 
         // 初始化token值
         Map<String, Object> claims = new HashMap<>();
