@@ -8,4 +8,6 @@ public interface VideoService {
     PageBeanVo findRecommendVideoByPage(Integer pageNum, Integer pageSize, Long userId);
     // 发布视频
     void save(Video video);
+    // 根据用户id查找视频
+    PageBeanVo findUserVideoByPage(int pageNum, int pageSize, Long uid);
 }

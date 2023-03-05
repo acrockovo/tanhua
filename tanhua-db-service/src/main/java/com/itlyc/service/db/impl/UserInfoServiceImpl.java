@@ -1,6 +1,9 @@
 package com.itlyc.service.db.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.itlyc.domain.db.UserInfo;
+import com.itlyc.domain.vo.PageBeanVo;
 import com.itlyc.mapper.UserInfoMapper;
 import com.itlyc.service.db.UserInfoService;
 import org.apache.dubbo.config.annotation.Service;
@@ -47,4 +50,20 @@ public class UserInfoServiceImpl implements UserInfoService {
     public UserInfo findById(Long id) {
         return userInfoMapper.findById(id);
     }
+
+    /**
+     * 查找用户列表
+     * @param pageNum 页码
+     * @param pageSize 每页条数
+     * @return
+     */
+    @Override
+    public PageBeanVo findByPage(Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum,pageSize);
+
+        Page<UserInfo> page = userInfoMapper.findByPage();
+
+        return new PageBeanVo(pageNum,pageSize,page.getTotal(),page.getResult());
+    }
+
 }

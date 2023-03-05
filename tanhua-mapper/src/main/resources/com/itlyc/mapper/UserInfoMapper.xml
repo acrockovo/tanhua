@@ -4,40 +4,14 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.itlyc.mapper.UserInfoMapper">
     <insert id="save" useGeneratedKeys="true" keyProperty="id">
-        insert into tb_user_info(
-        id,
-        nickname,
-        avatar,
-        tags,
-        gender,
-        age,
-        education,
-        city,
-        birthday,
-        cover_pic,
-        profession,
-        income,
-        marriage,
-        created,
-        updated
-        )
-        values(
-        #{id},
-        #{nickname},
-        #{avatar},
-        #{tags},
-        #{gender},
-        #{age},
-        #{education},
-        #{city},
-        #{birthday},
-        #{coverPic},
-        #{profession},
-        #{income},
-        #{marriage},
-        #{created},
-        #{updated}
-        )
+        insert into tb_user_info
+            (id,nickname,avatar,tags,gender,
+            age,education,city,birthday,cover_pic,
+            profession,income,marriage,created,updated)
+        values
+            (#{id},#{nickname},#{avatar},#{tags},#{gender},
+            #{age},#{education},#{city},#{birthday},#{coverPic},
+            #{profession},#{income},#{marriage},#{created},#{updated})
 
     </insert>
 
@@ -91,5 +65,8 @@
     </update>
     <select id="findById" resultType="com.itlyc.domain.db.UserInfo">
         select * from tb_user_info where id = #{id}
+    </select>
+    <select id="findByPage" resultType="com.itlyc.domain.db.UserInfo">
+        select * from tb_user_info
     </select>
 </mapper>

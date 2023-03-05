@@ -1,8 +1,7 @@
-package com.itlyc.manager;
+package com.itlyc.web.manager;
 
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.LineCaptcha;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.alibaba.fastjson.JSON;
 import com.itlyc.domain.db.Admin;
@@ -10,6 +9,8 @@ import com.itlyc.service.db.AdminService;
 import com.itlyc.util.ConstantUtil;
 import com.itlyc.util.JwtUtil;
 import com.itlyc.web.exception.BusinessException;
+import com.itlyc.web.interceptor.AdminHolder;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +18,13 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Component
 public class AdminManager {
 
@@ -73,7 +77,9 @@ public class AdminManager {
             throw new BusinessException("密码错误");
         }
 
+        // 删除验证码
         redisTemplate.delete(ConstantUtil.ADMIN_CODE +uuid);
+        log.info(admin.getUsername() + " 登录后台管理 " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 
         Map<String, Object> claim = new HashMap<>();
         claim.put("id",admin.getId());
@@ -96,7 +102,7 @@ public class AdminManager {
      * @param token 令牌
      * @return
      */
-    public ResponseEntity findAdminInfo(String token) {
+    /*public ResponseEntity findAdminInfo(String token) {
         //1.处理token 前端工程师会在token前添加"Bearer "
         if (StrUtil.isBlank(token)) {
             return ResponseEntity.status(401).body(null);
@@ -122,5 +128,18 @@ public class AdminManager {
         redisTemplate.opsForValue().set(ConstantUtil.ADMIN_TOKEN + token,json,Duration.ofHours(1));
 
         return ResponseEntity.ok(admin);
+    }*/
+
+    /**
+     * 用户登出
+     * @param token 令牌
+     * @return
+     */
+    public ResponseEntity logout(String token) {
+        token = token.replace("Bearer ", "");
+
+        redisTemplate.delete(ConstantUtil.ADMIN_TOKEN + token);
+        log.info(AdminHolder.get().getUsername() + " 退出后台管理 " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        return ResponseEntity.ok(null);
     }
 }

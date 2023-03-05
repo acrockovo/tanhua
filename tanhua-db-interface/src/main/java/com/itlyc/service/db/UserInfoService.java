@@ -1,6 +1,7 @@
 package com.itlyc.service.db;
 
 import com.itlyc.domain.db.UserInfo;
+import com.itlyc.domain.vo.PageBeanVo;
 
 /**
  * @author lyc
@@ -14,4 +15,6 @@ public interface UserInfoService {
     void update(UserInfo userInfo);
     // 根据用户id查找
     UserInfo findById(Long id);
+    // 查找用户列表
+    PageBeanVo findByPage(Integer pageNum, Integer pageSize);
 }

@@ -1,7 +1,8 @@
 package com.itlyc.controller;
 
 import cn.hutool.captcha.LineCaptcha;
-import com.itlyc.manager.AdminManager;
+import com.itlyc.web.manager.AdminManager;
+import com.itlyc.web.interceptor.AdminHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -52,6 +53,17 @@ public class AdminController {
      */
     @PostMapping("/system/users/profile")
     public ResponseEntity findAdminInfo(@RequestHeader("Authorization") String token){
-        return adminManager.findAdminInfo(token);
+        return ResponseEntity.ok(AdminHolder.get());
     }
+
+    /**
+     * 用户登出
+     * @param token 令牌
+     * @return
+     */
+    @PostMapping("/system/users/logout")
+    public ResponseEntity logout(@RequestHeader("Authorization") String token){
+        return adminManager.logout(token);
+    }
+
 }

@@ -210,6 +210,34 @@ public class MovementServiceImpl implements MovementService {
     @Override
     public Movement findMovementByMovementId(String movementId) {
 
-        return mongoTemplate.findById(new ObjectId(movementId),Movement.class);
+        return mongoTemplate.findById(movementId,Movement.class);
+    }
+
+    /**
+     * 查看用户发表动态列表
+     * @param uid 用户id
+     * @param state 状态
+     * @param pageNum 页码
+     * @param pageSize 每页条数
+     * @return
+     */
+    @Override
+    public PageBeanVo findMovementByCondition4Page(Long uid, Integer state, int pageNum, int pageSize) {
+        Query query = new Query()
+                .skip((pageNum-1)*pageSize).limit(pageSize)
+                .with(Sort.by(Sort.Order.desc("created")));
+        if(uid != null){
+            query.addCriteria(Criteria.where("userId").is(uid));
+        }
+
+        if (state != null) {
+            query.addCriteria(Criteria.where("state").is(state));
+        }
+
+        List<Movement> movementList = mongoTemplate.find(query, Movement.class);
+
+        long count = mongoTemplate.count(query, Movement.class);
+
+        return new PageBeanVo(pageNum,pageSize,count,movementList);
     }
 }

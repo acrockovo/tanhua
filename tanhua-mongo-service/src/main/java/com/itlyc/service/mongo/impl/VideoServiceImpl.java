@@ -70,4 +70,24 @@ public class VideoServiceImpl implements VideoService {
 
         mongoTemplate.save(recommendVideo);
     }
+
+    /**
+     * 根据用户id查找视频
+     * @param pageNum 页码
+     * @param pageSize 每页条数
+     * @param uid 用户id
+     * @return
+     */
+    @Override
+    public PageBeanVo findUserVideoByPage(int pageNum, int pageSize, Long uid) {
+
+        Query query = new Query(
+                Criteria.where("userId").is(uid)
+        ).skip((pageNum - 1) * pageSize).limit(pageSize)
+                .with(Sort.by(Sort.Order.desc("score")));
+
+        List<Video> videoList = mongoTemplate.find(query, Video.class);
+        long count = mongoTemplate.count(query, Video.class);
+        return new PageBeanVo(pageNum,pageSize,count,videoList);
+    }
 }
