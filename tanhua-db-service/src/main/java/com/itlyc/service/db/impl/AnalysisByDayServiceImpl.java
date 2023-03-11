@@ -6,6 +6,7 @@ import com.itlyc.domain.vo.AnalysisSummaryVo;
 import com.itlyc.mapper.AnalysisByDayMapper;
 import com.itlyc.mapper.LogMapper;
 import com.itlyc.service.db.AnalysisByDayService;
+import com.itlyc.util.ComputeUtil;
 import org.apache.dubbo.config.annotation.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,7 +28,7 @@ public class AnalysisByDayServiceImpl implements AnalysisByDayService {
         String yesterday = DateUtil.offsetDay(new Date(), -1).toDateStr();
 
         //2.先查询今日记录
-        AnalysisByDay analysisByDay = analysisByDayMapper.findToday(today);
+        AnalysisByDay analysisByDay = analysisByDayMapper.findDay(today);
 
         if (analysisByDay == null) {
             //若无则保存
@@ -53,8 +54,37 @@ public class AnalysisByDayServiceImpl implements AnalysisByDayService {
         }
     }
 
+    /**
+     * 首页数据统计
+     * @return
+     */
     @Override
     public AnalysisSummaryVo findSummary() {
-        return null;
+        AnalysisSummaryVo analysisSummaryVo = new AnalysisSummaryVo();
+        String today = DateUtil.offsetDay(new Date(),0).toDateStr(); // 今天
+        String yesterday = DateUtil.offsetDay(new Date(),-1).toDateStr(); // 昨天
+        String passWeek = DateUtil.offsetDay(new Date(),-7).toDateStr(); // 最近7天
+        String  passMonth = DateUtil.offsetDay(new Date(),-30).toDateStr(); // 最近30天
+        // 查询用户总数
+        Long userSum = analysisByDayMapper.findUserSum();
+        // 查询30天活跃用户数
+        Long activePassMonth = analysisByDayMapper.findActiveCountWithinPeriod(passMonth,yesterday);
+        // 查询7天活跃用户数
+        Long activePassWeek = analysisByDayMapper.findActiveCountWithinPeriod(passWeek,yesterday);
+        // 查询今日数据
+        AnalysisByDay todaySummary = analysisByDayMapper.findDay(today);
+        // 查询昨日数据
+        AnalysisByDay yesterdaySummary = analysisByDayMapper.findDay(yesterday);
+        // 封装
+        analysisSummaryVo.setCumulativeUsers(userSum); // 总用户数据
+        analysisSummaryVo.setActivePassMonth(activePassMonth); // 30天活跃用户数
+        analysisSummaryVo.setActivePassWeek(activePassWeek); // 7天活跃用户数
+        analysisSummaryVo.setNewUsersToday(todaySummary.getNumRegistered().longValue()); // 今日注册数据
+        analysisSummaryVo.setNewUsersTodayRate(ComputeUtil.computeRate(todaySummary.getNumRegistered(),yesterdaySummary.getNumRegistered()));
+        analysisSummaryVo.setLoginTimesToday(todaySummary.getNumLogin().longValue());
+        analysisSummaryVo.setLoginTimesTodayRate(ComputeUtil.computeRate(todaySummary.getNumLogin(),yesterdaySummary.getNumLogin()));
+        analysisSummaryVo.setActiveUsersToday(todaySummary.getNumActive().longValue());
+        analysisSummaryVo.setActiveUsersTodayRate(ComputeUtil.computeRate(todaySummary.getNumActive(),yesterdaySummary.getNumActive()));
+        return analysisSummaryVo;
     }
 }
