@@ -9,4 +9,18 @@
         values
         (#{userId}, #{type}, #{logTime}, #{place}, #{equipment})
     </insert>
+
+    <select id="findTodayCountByType" resultType="java.lang.Integer">
+        select count(distinct user_id) from tb_log
+        where log_time = #{today} and type = #{type}
+    </select>
+
+    <select id="findTodayActiveCount" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT user_id) FROM tb_log WHERE log_time = #{today}
+    </select>
+
+    <select id="findRetention1DayCount" resultType="java.lang.Integer">
+        select count(distinct user_id) from tb_log where log_time = #{today}
+            and user_id in (SELECT user_id FROM tb_log WHERE log_time = #{yesterday} AND TYPE = '0102')
+    </select>
 </mapper>

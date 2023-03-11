@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itlyc.mapper.AnalysisByDayMapper">
+    <select id="findToday" resultType="com.itlyc.domain.db.AnalysisByDay">
+        select * from tb_analysis_by_day where record_date = #{today}
+    </select>
+    <insert id="save">
+        insert into tb_analysis_by_day
+        (record_date, num_registered, num_active, num_login, num_retention1d, created, updated)
+        values
+        (#{recordDate}, #{numRegistered}, #{numActive}, #{numLogin}, #{numRetention1d}, #{created}, #{updated})
+    </insert>
+    <update id="updateById">
+        update tb_analysis_by_day
+        <set>
+            <if test="numRegistered != null">
+                num_registered = #{numRegistered},
+            </if>
+            <if test="numActive != null">
+                num_active = #{numActive},
+            </if>
+            <if test="numLogin != null">
+                num_login = #{numLogin},
+            </if>
+            <if test="numRetention1d != null">
+                num_retention1d = #{numRetention1d},
+            </if>
+            <if test="updated != null">
+                updated = #{updated},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+</mapper>
